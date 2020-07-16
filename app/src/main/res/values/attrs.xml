@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+
+    <!-- Circle View -->
+    <declare-styleable name="CircleView">
+        <attr name="align_center" format="boolean" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
+
+</resources>

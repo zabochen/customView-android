@@ -2,7 +2,6 @@ package ua.ck.zabochen.customview
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import ua.ck.zabochen.customview.view.CircleView
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,6 +12,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun showCircleView() {
-        setContentView(CircleView(this))
+        //setContentView(CircleView(this))
     }
 }

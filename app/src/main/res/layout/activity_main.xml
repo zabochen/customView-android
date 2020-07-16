@@ -7,12 +7,26 @@
     tools:context=".MainActivity">
 
     <ua.ck.zabochen.customview.view.CircleView
+        android:id="@+id/circleView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:align_center="true"
+        app:backgroundColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:radius="100dp" />
 
+    <View
+        android:id="@+id/someView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="200dp"
+        android:background="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/circleView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
