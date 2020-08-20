@@ -11,7 +11,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRectF
 import ua.ck.zabochen.customview.R
 
-class AvatarImageView @JvmOverloads constructor(
+class AvatarMaskImageView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -32,38 +32,43 @@ class AvatarImageView @JvmOverloads constructor(
 
     private var initials: String = DEFAULT_INITIALS
 
-    private val avatarPaint = Paint()
+    // Avatar
+    private val avatarPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private lateinit var avatarBitmap: Bitmap
     private val avatarRect = Rect()
 
-    private lateinit var srcBitmap: Bitmap
-    private lateinit var maskBitmap: Bitmap
-    private lateinit var resultBitmap: Bitmap
+    // Border
+    private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     init {
         if (attributeSet != null) {
             val avatarTypedArray: TypedArray =
-                context.obtainStyledAttributes(attributeSet, R.styleable.AvatarImageView)
+                context.obtainStyledAttributes(attributeSet, R.styleable.AvatarMaskImageView)
 
             // Get view attrs from xml
             with(avatarTypedArray) {
 
                 borderWidth = getDimension(
-                    R.styleable.AvatarImageView_aiv_borderWidth,
+                    R.styleable.AvatarMaskImageView_amiv_borderWidth,
                     context.dpToPx(DEFAULT_BORDER_WIDTH)
                 )
 
                 borderColor = getColor(
-                    R.styleable.AvatarImageView_aiv_borderColor,
+                    R.styleable.AvatarMaskImageView_amiv_borderColor,
                     DEFAULT_BORDER_COLOR
                 )
 
-                initials = getString(R.styleable.AvatarImageView_aiv_initials) ?: DEFAULT_INITIALS
-
-                // Set default ScaleType
-                scaleType = ScaleType.CENTER_CROP
+                initials = getString(R.styleable.AvatarMaskImageView_amiv_initials) ?: DEFAULT_INITIALS
             }
-            setup()
+
+            // Recycle res
+            avatarTypedArray.recycle()
         }
+
+        // Set default ScaleType
+        scaleType = ScaleType.CENTER_CROP
+
+        setup()
     }
 
     // Many times
@@ -84,46 +89,35 @@ class AvatarImageView @JvmOverloads constructor(
             right = w // x
             bottom = h // y
         }
-        prepareBitmaps(w, h)
+        prepareShader(w, h)
     }
 
     override fun onDraw(canvas: Canvas?) {
         //super.onDraw(canvas)
-        canvas?.drawBitmap(resultBitmap, avatarRect, avatarRect, null)
+        canvas?.let {
+            // Avatar
+            it.drawOval(avatarRect.toRectF(), avatarPaint)
+
+            // Border
+            // Reduce rectangle horizontal and vertical
+            val borderHalf: Int = borderWidth.toInt() / 2
+            avatarRect.inset(borderHalf, borderHalf)
+            it.drawOval(avatarRect.toRectF(), borderPaint)
+        }
     }
 
     private fun setup() {
-        with(avatarPaint) {
-            color = Color.RED
-            style = Paint.Style.FILL
+        // Border Paint
+        with(borderPaint) {
+            style = Paint.Style.STROKE
+            color = borderColor
+            strokeWidth = borderWidth
         }
     }
 
-    private fun prepareBitmaps(width: Int, height: Int) {
-        // For mask we use only alpha channel
-        this.maskBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8)
-
-        // For result we use alpha channel with all colors
-        this.resultBitmap = maskBitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        // Image scr drawable to bitMap
-        this.srcBitmap = drawable.toBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-        // Edit maskBitmap
-        Canvas(maskBitmap).also {
-            it.drawOval(avatarRect.toRectF(), avatarPaint)
-        }
-
-        // Edit resultBitmap
-        Canvas(resultBitmap).also {
-            // DST
-            it.drawBitmap(maskBitmap, avatarRect, avatarRect, null)
-
-            // SRC
-            val paintXfer = Paint()
-            paintXfer.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-            it.drawBitmap(srcBitmap, avatarRect, avatarRect, paintXfer)
-        }
+    private fun prepareShader(width: Int, height: Int) {
+        this.avatarBitmap = drawable.toBitmap(width, height, Bitmap.Config.ARGB_8888)
+        this.avatarPaint.shader = BitmapShader(avatarBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
     }
 
     private fun resolveViewSize(measureSpec: Int): Int {

@@ -8,11 +8,18 @@
         <attr name="radius" format="dimension" />
     </declare-styleable>
 
-    <!-- Avatar: ImageView -->
-    <declare-styleable name="AvatarImageView">
-        <attr name="aiv_borderWidth" format="dimension" />
-        <attr name="aiv_borderColor" format="color" />
-        <attr name="aiv_initials" format="string" />
+    <!-- Avatar Mask: ImageView -->
+    <declare-styleable name="AvatarMaskImageView">
+        <attr name="amiv_borderWidth" format="dimension" />
+        <attr name="amiv_borderColor" format="color" />
+        <attr name="amiv_initials" format="string" />
+    </declare-styleable>
+
+    <!-- Avatar Shader: ImageView -->
+    <declare-styleable name="AvatarShaderImageView">
+        <attr name="asiv_borderWidth" format="dimension" />
+        <attr name="asiv_borderColor" format="color" />
+        <attr name="asiv_initials" format="string" />
     </declare-styleable>
 
 </resources>
